@@ -1,3 +1,9 @@
+''' README
+In this script, we will use the library SOCKETS to use them to make a connection to the target on the specified ports.
+This sockets need to be closed before the script ends in order to ensure the safety.
+We manage errors like "ConnectionRefusedError" and excesive conection times to speed up the  script and ensure error handling
+With "ARGPARSE" the data needed is inputed as parameters, making the script perfect for terminal use
+'''
 import socket
 import threading 
 import argparse
@@ -29,31 +35,24 @@ def def_handler(sig, frame):
 
     sys.exit(1)
 
-
 signal.signal(signal.SIGINT, def_handler) #Ctrl + C
-
 
 # We work with the necessary data as arguments
 # With this library, the value of the arguments is stored as an instance of the class options
-
 def get_arguments():
     parser = argparse.ArgumentParser(description="Fast TCP Port Scan")
 
     # | Call mode / Where the value is stored / Required / Description |
     parser.add_argument("-t", "--target", dest="target", required=True, help= "Target's Ip to scan (Ex: -t 192.168.1.2)")
-
     # | Call mode / Where the value is stored / Required / Description |
     parser.add_argument("-p", "--port", dest="port", required=True, help= "Port range to scan (Ex: -p )")
     options = parser.parse_args()
 
     return options.target, options.port
 
-
 def create_socket():
-
     # Socket for IPv4 directions and TPC conections
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
     #Maximum waiting time for connection.
     s.settimeout(0.5)
 
@@ -63,7 +62,6 @@ def create_socket():
 def port_scanner(port, host):
 
     s = create_socket()
-
     # Connection to a host through a port, so that if it is open, the connection is made.
     try:
         s.connect((host, port))
@@ -72,17 +70,15 @@ def port_scanner(port, host):
     # We handle the option of taking longer than desired to make the connection.
     except (socket.timeout, ConnectionRefusedError):
         pass
-
     finally:
         s.close()
-
     s.close()
 
 def scan_ports(ports, target):
 
     threads = []
 
-    # Scan ports as received in the function “parse_ports”.
+    # Scan ports as received in the function “parse_ports” using threads.
     for port in ports:
         thread = threading.Thread(target=port_scanner, args=(port, target))
         threads.append(thread)
